@@ -1,6 +1,6 @@
-# accessprivate
+# accessprivate - Accessing private members in C++20
 
-This library is a result of the article [A foliage of folly](https://dfrib.github.io/a-foliage-of-folly/), and offers a standard-conformant utility for accessing (including write access to) private members.
+This library is a result of the article [A foliage of folly](https://dfrib.github.io/a-foliage-of-folly/), and offers a standard-conformant utility for accessing (including write access to) private members. As is covered in detailed in the article, the techniques of the library depends on a new minor C++20 feature, but is likely work work also for C++17 for major compilers such as GCC and Clang (albeit being non-conformant in C++17).
 
 This lib should not be used in production code, but can be useful e.g. for injection testing.
 
