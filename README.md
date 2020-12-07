@@ -44,14 +44,14 @@ DEFINE_ACCESSOR_C(bar::Bar, y)
 
 void const_accessor() {
     const bar::Bar b{};
-    std::cout << accessprivate::get_x(b) << " "    // 13
-              << accessprivate::get_x(b) << "\n";  // 33
+    std::cout << accessprivate::get_x(b) << " "    // 42
+              << accessprivate::get_x(b) << "\n";  // 88
 }
 ```
 
 ### Constraints
 
-The respective non-const and const accessor macros:
+The respective non-const `DEFINE_ACCESSOR` and const `DEFINE_ACCESSOR_C` accessor macros:
 
 - shall be invoked from the global namespace scope,
 - shall, for a given set of arguments, only be invoked once within a given TU (lest you have an ODR-violation; diagnosable however)
@@ -69,7 +69,7 @@ DEFINE_ACCESSOR_C(ns::Foo, x)
 DEFINE_ACCESSOR_C(ns::Foo, y)
 ```
 
-whereas the following are all invalid uses of the macros (and will be diagnosed as such by the compiler):
+whereas the following are both invalid uses of the macros (and will be diagnosed as such by the compiler):
 
 ```c++
 // invalid_a.cpp
@@ -86,7 +86,7 @@ DEFINE_ACCESSOR(ns::Foo, x)  // redefinition
 namespace ns {
 class Foo { int x; int y; }
 
-    DEFINE_ACCESSOR(ns::Foo, x)  // not global namespace scope
+DEFINE_ACCESSOR(Foo, x)  // not invoked from the global namespace scope
 }  // namespace ns
 ```
 
