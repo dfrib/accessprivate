@@ -106,8 +106,10 @@ As is covered in detailed in the article, the techniques of the library depends 
 ## Running tests
 
 ```sh
-# from repo root
-$ cmake .
+# (clone repo): from repo root
+$ mkdir build
+$ cd build
+$ cmake ../
 $ cmake --build .
 $ make test
 ```
