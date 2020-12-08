@@ -7,34 +7,61 @@
 
 namespace accessprivate {
 
+/// Top-level accessor class whose member class specializations are used
+/// to define class- and members of the class-specific accessors.
+///
+/// \tparam mem_ptr  Non-type template parameter of placeholder type, intended
+///                  to take template arguments (whilst specializing the)
+///                  classes) that are pointers to private members.
 template <auto mem_ptr>
 struct AccessPrivate
 {
-    // kMemPtr is intended to be either a pointer to a private
-    // member function or pointer to a private data member.
+    /// Static data member that is intende to store the access-eras pointer
+    /// to a private member function or pointer to a private data member.
     static constexpr auto kMemPtr = mem_ptr;
 
-    // Define only in explicit specializations.
+    /// Member class intended to be explicitly specialized to provide non-const
+    /// accessors to the class over whose private data member is is being
+    /// specialized.
+    ///
+    /// This member class should only ever be defined in explicit
+    /// specializations.
     struct Delegate;
+
+    /// Member class intended to be explicitly specialized to provide const
+    /// accessors to the class over whose private data member is is being
+    /// specialized.
+    ///
+    /// This member class should only ever be defined in explicit
+    /// specializations.
     struct ConstDelegate;  // To allow overloading accessors on constness.
 };
 
 }  // namespace accessprivate
 
-// Note: the accessor macros need to be invoked from the global namespace
-// scope (not from within a namespace scope).
-
-// DEFINE_ACCESSOR(<qualified class name>, <class data member>)
-// Defines a non-const accessor:
-//   auto& get_<class data member>(<qualified class name>&)
-//
-// into the ::accessprivate namespace scope.
-//
-// Example usage:
-//   DEFINE_ACCESSOR(foo::Foo, x)
-//
-// Defines:
-//   auto& accessprivate::get_x(foo::Foo&)
+/// Macro for defining a non-const accessor function.
+///
+/// For an argument that is a qualified class name (say `QCN`) and an argument
+/// that is a (private) class data member (say `CDM`) of the former class,
+/// invocation of the macro over these arguments defines the following
+/// non-const accessor function
+/// ```{.cpp}
+/// auto& get_<CDM>(<QCN>&)
+/// ```
+/// into the `accessprivate` namespace scope.
+///
+/// Example usage:
+/// ```{.cpp}
+/// // From global namespace scope.
+/// DEFINE_ACCESSOR(foo::Foo, x)
+/// // -> auto& accessprivate::get_x(foo::Foo&)
+/// ```
+///
+/// \attention The accessor macro needs to be invoked from the global namespace
+///            scope.
+///
+/// \param qualified_class_name  Qualified class name
+/// \param class_data_member     (Private) class data member of the class
 #define DEFINE_ACCESSOR(qualified_class_name, class_data_member)\
 namespace accessprivate {\
 template <>\
@@ -45,17 +72,29 @@ struct AccessPrivate<&qualified_class_name::class_data_member>::Delegate {\
 auto& get_##class_data_member(qualified_class_name& obj);\
 }
 
-// DEFINE_ACCESSOR_C(<qualified class name>, <class data member>)
-// Defines a const accessor:
-//   auto const& get_<class data member>(<qualified class name> const&)
-//
-// into the ::accessprivate namespace scope.
-//
-// Example usage:
-//   DEFINE_ACCESSOR_C(foo::Foo, x)
-//
-// Defines:
-//   auto const& accessprivate::get_x(foo::Foo const&)
+/// Macro for defining const accessor function.
+///
+/// For an argument that is a qualified class name (say `QCN`) and an argument
+/// that is a (private) class data member (say `CDM`) of the former class,
+/// invocation of the macro over these arguments defines the following const
+/// accessor function
+/// ```{.cpp}
+/// auto const& get_<CDM>(<QCN> const&)
+/// ```
+/// into the `accessprivate` namespace scope.
+///
+/// Example usage:
+/// ```{.cpp}
+/// // From global namespace scope.
+/// DEFINE_ACCESSOR_C(foo::Foo, x)
+/// // -> auto const& accessprivate::get_x(foo::Foo const&)
+/// ```
+///
+/// \attention The accessor macro needs to be invoked from the global namespace
+///            scope.
+///
+/// \param qualified_class_name  Qualified class name
+/// \param class_data_member     (Private) class data member of the class
 #define DEFINE_ACCESSOR_C(qualified_class_name, class_data_member)\
 namespace accessprivate {\
 template <>\
