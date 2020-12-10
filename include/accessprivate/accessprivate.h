@@ -14,27 +14,26 @@ namespace accessprivate {
 ///                  to take template arguments (whilst specializing the)
 ///                  classes) that are pointers to private members.
 template <auto mem_ptr>
-struct AccessPrivate
-{
-    /// Static data member that is intende to store the access-eras pointer
-    /// to a private member function or pointer to a private data member.
-    static constexpr auto kMemPtr = mem_ptr;
+struct AccessPrivate {
+  /// Static data member that is intende to store the access-eras pointer
+  /// to a private member function or pointer to a private data member.
+  static constexpr auto kMemPtr = mem_ptr;
 
-    /// Member class intended to be explicitly specialized to provide non-const
-    /// accessors to the class over whose private data member is is being
-    /// specialized.
-    ///
-    /// This member class should only ever be defined in explicit
-    /// specializations.
-    struct Delegate;
+  /// Member class intended to be explicitly specialized to provide non-const
+  /// accessors to the class over whose private data member is is being
+  /// specialized.
+  ///
+  /// This member class should only ever be defined in explicit
+  /// specializations.
+  struct Delegate;
 
-    /// Member class intended to be explicitly specialized to provide const
-    /// accessors to the class over whose private data member is is being
-    /// specialized.
-    ///
-    /// This member class should only ever be defined in explicit
-    /// specializations.
-    struct ConstDelegate;  // To allow overloading accessors on constness.
+  /// Member class intended to be explicitly specialized to provide const
+  /// accessors to the class over whose private data member is is being
+  /// specialized.
+  ///
+  /// This member class should only ever be defined in explicit
+  /// specializations.
+  struct ConstDelegate;  // To allow overloading accessors on constness.
 };
 
 }  // namespace accessprivate
@@ -62,15 +61,16 @@ struct AccessPrivate
 ///
 /// \param qualified_class_name  Qualified class name
 /// \param class_data_member     (Private) class data member of the class
-#define DEFINE_ACCESSOR(qualified_class_name, class_data_member)\
-namespace accessprivate {\
-template <>\
-struct AccessPrivate<&qualified_class_name::class_data_member>::Delegate {\
-    friend auto& get_##class_data_member(\
-        qualified_class_name& obj) { return obj.*kMemPtr; }\
-};\
-auto& get_##class_data_member(qualified_class_name& obj);\
-}
+#define DEFINE_ACCESSOR(qualified_class_name, class_data_member)               \
+  namespace accessprivate {                                                    \
+  template <>                                                                  \
+  struct AccessPrivate<&qualified_class_name::class_data_member>::Delegate {   \
+    friend auto &get_##class_data_member(qualified_class_name &obj) {          \
+      return obj.*kMemPtr;                                                     \
+    }                                                                          \
+  };                                                                           \
+  auto &get_##class_data_member(qualified_class_name &obj);                    \
+  }
 
 /// Macro for defining const accessor function.
 ///
@@ -95,13 +95,15 @@ auto& get_##class_data_member(qualified_class_name& obj);\
 ///
 /// \param qualified_class_name  Qualified class name
 /// \param class_data_member     (Private) class data member of the class
-#define DEFINE_ACCESSOR_C(qualified_class_name, class_data_member)\
-namespace accessprivate {\
-template <>\
-struct AccessPrivate<&qualified_class_name::class_data_member>::ConstDelegate {\
-    friend auto const& get_##class_data_member(\
-        qualified_class_name const& obj) { return obj.*kMemPtr; }\
-};\
-auto const& get_##class_data_member(qualified_class_name const& obj);\
-}
-
+#define DEFINE_ACCESSOR_C(qualified_class_name, class_data_member)             \
+  namespace accessprivate {                                                    \
+  template <>                                                                  \
+  struct AccessPrivate<                                                        \
+      &qualified_class_name::class_data_member>::ConstDelegate {               \
+    friend auto const &                                                        \
+        get_##class_data_member(qualified_class_name const &obj) {             \
+      return obj.*kMemPtr;                                                     \
+    }                                                                          \
+  };                                                                           \
+  auto const &get_##class_data_member(qualified_class_name const &obj);        \
+  }

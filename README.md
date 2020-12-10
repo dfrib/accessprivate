@@ -54,7 +54,7 @@ DEFINE_ACCESSOR_C(bar::Bar, y)
 void const_accessor() {
     const bar::Bar b{};
     std::cout << accessprivate::get_x(b) << " "    // 42
-              << accessprivate::get_x(b) << "\n";  // 88
+              << accessprivate::get_y(b) << "\n";  // 88
 }
 ```
 
